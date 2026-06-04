@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Image Processing - Laboratorium Komputer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script async src="https://docs.opencv.org/4.x/opencv.js" type="text/javascript" id="opencv-js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="titlebar">
+    <div class="titlebar-icon">
+        <span></span><span></span><span></span>
+        <span></span><span></span><span></span>
+        <span></span><span></span><span></span>
+    </div>
+    <div class="titlebar-text">
+        <h1>DIGITAL IMAGE PROCESSING</h1>
+        <p>Aplikasi Pengolahan Citra Digital</p>
+    </div>
+    <div id="opencv-status">OpenCV.js Loading...</div>
+</header>
+
+<div class="app-body">
+    <nav class="sidebar">
+        <div class="sidebar-label">Proses Wajib Modul</div>
+        <button class="sidebar-btn" id="menu-grayscale" onclick="selectMenu('grayscale')">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 010 18"/></svg>
+            Grayscale
+        </button>
+        <button class="sidebar-btn" id="menu-binary" onclick="selectMenu('binary')">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path stroke-dasharray="3 2" d="M3 12h18M12 3v18"/></svg>
+            Citra Biner
+        </button>
+        <button class="sidebar-btn" id="menu-arithmetic" onclick="selectMenu('arithmetic')">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8M12 8v8"/></svg>
+            Operasi Aritmatika
+        </button>
+        <button class="sidebar-btn" id="menu-logic" onclick="selectMenu('logic')">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h8a6 6 0 010 12H4z"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
+            Operasi Logika
+        </button>
+
+        <div class="sidebar-label">Fitur Optional</div>
+        <button class="sidebar-btn" id="menu-histogram" onclick="selectMenu('histogram')">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="10" width="4" height="11"/><rect x="10" y="4" width="4" height="17"/><rect x="17" y="7" width="4" height="14"/></svg>
+            Histogram & Ekualisasi
+        </button>
+        <button class="sidebar-btn" id="menu-convolution" onclick="selectMenu('convolution')">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12H2M12 2v20M4.93 4.93l14.14 14.14M19.07 4.93L4.93 19.07"/></svg>
+            Konvolusi (Filter)
+        </button>
+        <button class="sidebar-btn" id="menu-morphology" onclick="selectMenu('morphology')">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>
+            Morfologi
+        </button>
+
+        <div class="sidebar-bottom">
+            <button class="sidebar-btn reset" onclick="resetAll()">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+                Reset Workspace
+            </button>
+            <button class="sidebar-btn save" onclick="saveResult()">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 3v5h8V3M5 21v-7h14v7"/></svg>
+                Simpan Hasil (.png)
+            </button>
+        </div>
+    </nav>
+
+    <main class="content">
+        <div class="images-row">
+            <div class="panel">
+                <div class="panel-header input">Citra Utama (Source Input)</div>
+                <div class="canvas-container">
+                    <img id="inputImg" src="" alt="Silakan unggah berkas gambar utama" style="display:none;" />
+                    <img id="secondaryInputImg" src="" style="display:none;" />
+                </div>
+                <div class="input-controls">
+                    <div class="file-input-wrapper">
+                        <button class="btn-upload">Pilih Citra Utama</button>
+                        <input type="file" id="fileLoad" accept="image/*" onchange="loadUtama(event)" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header output" id="outputHeaderTitle">Hasil Pemrosesan (Output)</div>
+                <div class="canvas-container">
+                    <canvas id="outputCanvas" style="display:none;"></canvas>
+                </div>
+                <div class="input-controls">
+                    <button class="img-ctrl-btn" onclick="kontrolTransformasi('zoomIn')">Zoom In (+)</button>
+                    <button class="img-ctrl-btn" onclick="kontrolTransformasi('zoomOut')">Zoom Out (-)</button>
+                    <button class="img-ctrl-btn" onclick="kontrolTransformasi('rotate')">Rotasi 90°</button>
+                </div>
+            </div>
+
+            <div class="panel histogram-panel">
+                <div class="panel-header">Histogram</div>
+                <div style="flex:1; position:relative; min-height:140px;">
+                    <canvas id="histogramChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <aside class="right-panel" id="rightPanel">
+        <div class="right-panel-title" id="panelTitle">Panel Operasi</div>
+        <div class="op-body" id="panelContent"></div>
+    </aside>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
